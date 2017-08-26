@@ -19,6 +19,8 @@ Usage examples:
     profitDrain -o=t.db -x=\"stop 0\"
     profitDrain -o=t.db -x=\"stop 32\"
 
+https://github.com/szilardo/profitDrain/blob/master/documentation/profitDrain_1.0.0.png
+
 Motivation:
     Waiting for builds instead of actively working on solving problems is wasted time and can cause frustration,
 loss of concentration, lower productivity, context switching, and many more issues. In case of a larger team,

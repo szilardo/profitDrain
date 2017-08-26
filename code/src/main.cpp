@@ -621,7 +621,6 @@ int stat(Context& context)
             }
         }
     }
-    std::cout << data.avgBuildTime << "-" <<data.totalBuildTime << "+"<< i << std::endl;
     data.avgBuildTime = data.totalBuildTime / data.successfulBuildCount;
 
     for (int i = 0; i < data.buildGraphData.buildDates.size(); ++i)
