@@ -10,8 +10,8 @@ pushd .build;
                          -fno-exceptions \
                          --std=c++17 \
                          -I"../../sysroot/include/" \
-                         -I"./code/public/include/profitDrain/" \
-                         -I"./code/private/include/profitDrain/" \
+                         -I"../code/public/include/profitDrain/" \
+                         -I"../code/private/include/profitDrain/" \
                          -L"../../sysroot/lib/" \
                          -o "profitDrain" \
                          "../code/src/resistance_is_futile.cpp";

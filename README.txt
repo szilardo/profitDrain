@@ -4,8 +4,8 @@ Description:
 Usage:
     profitDrain -o=<timer database file> -x=<Operation To Execute>
        -x=<Operation to execute>
-           \"start <note>\" - start timer
-           \"stop <exit code>\" - stop timer
+           "start <note>" - start timer
+           "stop <exit code>" - stop timer
            stat - print build time statistics
            dump - dump raw data as text
        -o=<Timer database file name>
@@ -15,9 +15,9 @@ Usage examples:
     profitDrain -o=t.db -x=stat
     profitDrain -o=t.db -x=dump
     profitDrain -o=t.db -x=start
-    profitDrain -o=t.db -x=\"start First build after integrating library xyz.\"
-    profitDrain -o=t.db -x=\"stop 0\"
-    profitDrain -o=t.db -x=\"stop 32\"
+    profitDrain -o=t.db -x="start First build after integrating library xyz."
+    profitDrain -o=t.db -x="stop 0"
+    profitDrain -o=t.db -x="stop 32"
 
 https://github.com/szilardo/profitDrain/blob/master/documentation/profitDrain_1.0.0.png
 
