@@ -34,6 +34,18 @@
 
 namespace pdrain
 {
+
+void gimmeTime(const time_t* theTime, struct tm* result)
+{
+#if defined(_WIN64) || defined(_WIN32)
+    gmtime_s(result, theTime);
+#elif defined(__APPLE__)
+    gmtime_r(theTime, result);
+#else
+#error "NIMBY"
+#endif
+}
+
 enum class Operation: char
 {
     START,
@@ -134,6 +146,7 @@ struct StatOperationData
     size_t totalBuildTime;
     double avgBuildTime;
     size_t lastBuildTime;
+    size_t maxBuildTime;
     BuildGraphData buildGraphData;
 };
 
@@ -148,7 +161,8 @@ struct Context
 std::string computeDateStr(int64_t timestamp)
 {
     struct tm tmbuff;
-    gmtime_s(&tmbuff, &timestamp);
+    gimmeTime((time_t*)&timestamp, &tmbuff);
+    // gmtime_s(&tmbuff, &timestamp);
     const std::string dmy = std::to_string(tmbuff.tm_mday) + "." +
                             std::to_string(tmbuff.tm_mon + 1) + "." +
                             std::to_string(tmbuff.tm_year + 1900);
@@ -395,6 +409,13 @@ void printBuildStats(const StatOperationData& data)
               << (data.totalBuildTime / 1000 % 60) << " seconds, "
               << data.totalBuildTime % 1000 << " milliseconds. "
               << "(" << data.totalBuildTime << " ms total)" << std::endl;
+    std::cout << "    Max build time: "
+              << (int64_t) (data.maxBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
+              << ((data.maxBuildTime / 1000 / 3600) % 24) << " hours, "
+              << ((data.maxBuildTime / 1000 / 60) % 60) << " minutes, "
+              << (data.maxBuildTime / 1000 % 60) << " seconds, "
+              << data.maxBuildTime % 1000 << " milliseconds. "
+              << "(" << data.maxBuildTime << " ms total)" << std::endl;
     std::cout << "    Avg build time: "
               << (int64_t) (data.avgBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
               << ((int64_t) (data.avgBuildTime / 1000 / 3600) % 24) << " hours, "
@@ -605,6 +626,10 @@ int stat(Context& context)
             if (stopData->exitCode == "0")
             {
                 data.lastBuildTime = buildTime;
+            }
+
+            if (buildTime > data.maxBuildTime) {
+                data.maxBuildTime = buildTime;
             }
         }
         else
