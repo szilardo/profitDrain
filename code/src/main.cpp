@@ -41,6 +41,8 @@ void gimmeTime(const time_t* theTime, struct tm* result)
     gmtime_s(result, theTime);
 #elif defined(__APPLE__)
     gmtime_r(theTime, result);
+#elif defined(__linux__)
+    gmtime_r(theTime, result);
 #else
 #error "NIMBY"
 #endif

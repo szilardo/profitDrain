@@ -1,0 +1,72 @@
+name: CI
+on: 
+  push:
+  pull_request:
+    types: [closed]
+
+jobs:
+  ci: 
+    name: "BUILD ${{matrix.os}}"
+    runs-on: ${{matrix.os}}
+    
+    strategy:
+      fail-fast: false
+      matrix: 
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+                
+      - name: WINDOWS - Set extension
+        if: runner.os == 'Windows'
+        run: echo "::set-env name=EXE_EXTENSION::.exe"
+                
+      - name: Print os
+        shell: bash
+        run: echo ${{matrix.os}}
+        
+      - name: Print environment
+        shell: bash
+        run: env
+        
+      - name: Print working directory and contents
+        shell: bash
+        run: pwd && ls -lah
+        
+      - name: Prebuild setup
+        shell: bash
+        run: |
+          mkdir .build
+          mkdir ../../sysroot
+          
+      - name: UNIX - Build the project
+        shell: bash
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: ./build.sh
+        
+      - name: WINDOWS - Find visual studio environment
+        shell: bash
+        if: runner.os == 'Windows'
+        run: echo "`find c:/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/*/*/VC/Auxiliary/ -name vcvarsall.bat -print -quit`" > ./.vcvarsall.bat.path
+     
+      - name: WINDOWS - Build the project
+        shell: cmd
+        if: runner.os == 'Windows'
+        run: build.bat
+      
+      - name: Run help
+        shell: bash
+        run: ./.build/profitDrain$EXE_EXTENSION -h
+      
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        with:
+          name: "profitDrain_x86_64_${{matrix.os}}_${{github.sha}}"
+          path: ./.build/profitDrain
+        
+        
+      - uses: actions/upload-artifact@v1
+        if: runner.os == 'Windows'
+        with:
+          name: "profitDrain_x86_64_${{matrix.os}}_${{github.sha}}"
+          path: ./.build/profitDrain.exe

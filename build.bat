@@ -23,11 +23,12 @@ cl.exe /W3 ^
        /link /LIBPATH:"../../sysroot/lib/" %= Search path for libraries =% ^
              /DEBUG ^
              /SUBSYSTEM:CONSOLE
-SET ild_result=%errorlevel%
+SET build_result=%errorlevel%
 
 copy /Y "..\code\public\include\*" "../../sysroot/include/"
 copy /Y ".\profitDrain.exe" "../../sysroot/bin/"
 
 popd
 
-echo "==== Build finished with code: %uild_result%"
+echo "==== Build finished with code: %build_result%"
+exit %build_result%
