@@ -1,40 +1,39 @@
 /**********************************************************************************
-* .i. Peace Among Worlds .i.
-*
-* MIT License
-*
-* Copyright (c) 2017 Szilard Orban <devszilardo@gmail.com>
-* All Rights Reserved.
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
-**********************************************************************************/
+ * .i. Peace Among Worlds .i.
+ *
+ * MIT License
+ *
+ * Copyright (c) 2017 Szilard Orban <devszilardo@gmail.com>
+ * All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ **********************************************************************************/
 
+#include <chrono>
 #include <iostream>
 #include <string>
-#include <chrono>
 #include <time.h>
 
 // TODO(Feature): Allow stat to run across multiple database files..
 
 namespace pdrain
 {
-
 void gimmeTime(const time_t* theTime, struct tm* result)
 {
 #if defined(_WIN64) || defined(_WIN32)
@@ -48,7 +47,7 @@ void gimmeTime(const time_t* theTime, struct tm* result)
 #endif
 }
 
-enum class Operation: char
+enum class Operation : char
 {
     START,
     STOP,
@@ -99,7 +98,7 @@ std::string trimWhiteSpace(const std::string& str)
     }
 
     size_t j = out.size();
-    for (;j > 0; --j)
+    for (; j > 0; --j)
     {
         if (out[j - 1] == ' ')
         {
@@ -131,7 +130,6 @@ struct StopOperationData
     int64_t timestamp;
 };
 
-
 struct BuildGraphData
 {
     std::vector<int64_t> totalBuildTimes;
@@ -141,7 +139,8 @@ struct BuildGraphData
 
 struct StatOperationData
 {
-    std::vector<std::pair<Operation, void*>> ops; // Note: Don't bother deleting the data, allocated once, OS will reclaim in the end
+    std::vector<std::pair<Operation, void*>>
+        ops; // Note: Don't bother deleting the data, allocated once, OS will reclaim in the end
 
     size_t totalBuildCount;
     size_t successfulBuildCount;
@@ -159,24 +158,23 @@ struct Context
     std::string outFilePath;
 };
 
-
 std::string computeDateStr(int64_t timestamp)
 {
     struct tm tmbuff;
-    gimmeTime((time_t*)&timestamp, &tmbuff);
+    gimmeTime((time_t*) &timestamp, &tmbuff);
     // gmtime_s(&tmbuff, &timestamp);
-    const std::string dmy = std::to_string(tmbuff.tm_mday) + "." +
-                            std::to_string(tmbuff.tm_mon + 1) + "." +
+    const std::string dmy = std::to_string(tmbuff.tm_mday) + "." + std::to_string(tmbuff.tm_mon + 1) + "." +
                             std::to_string(tmbuff.tm_year + 1900);
     return dmy;
 }
 
 bool init(const std::vector<std::pair<std::string, std::string>>& arguments, Context& ctx)
 {
-    const auto printHelp = []()
-    {
+    const auto printHelp = []() {
         std::cout << "Description:" << std::endl;
-        std::cout << "    Profit Drain is a simple tool that helps track the time spent waiting for builds to finish." << std::endl << std::endl;
+        std::cout << "    Profit Drain is a simple tool that helps track the time spent waiting for builds to finish."
+                  << std::endl
+                  << std::endl;
 
         std::cout << "Usage: " << std::endl;
         std::cout << "    profitDrain -o=<timer database file> -x=<Operation To Execute>" << std::endl;
@@ -197,29 +195,40 @@ bool init(const std::vector<std::pair<std::string, std::string>>& arguments, Con
         std::cout << "    profitDrain -o=t.db -x=\"stop 32\"" << std::endl << std::endl;
 
         std::cout << "Motivation:" << std::endl;
-        std::cout << "    Waiting for builds instead of actively working on solving problems is wasted time and can cause frustration,\n"
-                     "loss of concentration, lower productivity, context switching, and many more issues. In case of a larger team, \n"
+        std::cout << "    Waiting for builds instead of actively working on solving problems is wasted time and can "
+                     "cause frustration,\n"
+                     "loss of concentration, lower productivity, context switching, and many more issues. In case of a "
+                     "larger team, \n"
                      "the problems can become much worse.\n"
-                     "    This tool should highlight the benefits of faster build times and short develop-build-test cycles, \n"
-                     "and that this is something very much worth investing in. Fast development cycles are great for any project!" << std::endl;
-        std::cout << "    Frustration and misery experienced with slow builds and joy felt working with well structured, fast builds has led\n"
+                     "    This tool should highlight the benefits of faster build times and short develop-build-test "
+                     "cycles, \n"
+                     "and that this is something very much worth investing in. Fast development cycles are great for "
+                     "any project!"
+                  << std::endl;
+        std::cout << "    Frustration and misery experienced with slow builds and joy felt working with well "
+                     "structured, fast builds has led\n"
                      "to the creation of this small tool. ";
         std::cout << "I hope someone else will find it useful." << std::endl << std::endl;
 
         std::cout << "Copyright:" << std::endl;
-        std::cout << "    (c) 2017 Szilard Orban <devszilardo@gmail.com>. All Rights Reserved." << std::endl << std::endl;
+        std::cout << "    (c) 2017 Szilard Orban <devszilardo@gmail.com>. All Rights Reserved." << std::endl
+                  << std::endl;
 
         std::cout << "Support the work:" << std::endl;
-        std::cout << "    If you feel that you are getting value from the software, please consider supporting my work by donating \n"
-                     "and passing the word about the software to those that might find it useful." << std::endl;
+        std::cout << "    If you feel that you are getting value from the software, please consider supporting my work "
+                     "by donating \n"
+                     "and passing the word about the software to those that might find it useful."
+                  << std::endl;
         std::cout << "Your help is much appreciated:" << std::endl;
-        std::cout << "    https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=P9FRPKSN7J6WC&source=url" << std::endl << std::endl;
+        std::cout << "    https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=P9FRPKSN7J6WC&source=url"
+                  << std::endl
+                  << std::endl;
 
         exit(0);
     };
 
     bool outputFileSet = false, operationSpecified = false;
-    for(const auto& val: arguments)
+    for (const auto& val : arguments)
     {
         if (val.first == "x")
         {
@@ -289,11 +298,10 @@ bool init(const std::vector<std::pair<std::string, std::string>>& arguments, Con
     return outputFileSet && operationSpecified;
 }
 
-
 int writeData(const Context& context, StopOperationData* data)
 {
     FILE* f = fopen(context.outFilePath.c_str(), "ab");
-    if(!f)
+    if (!f)
     {
         std::cerr << "Failed to open output file: " << context.outFilePath << std::endl;
         return -2;
@@ -315,7 +323,7 @@ int writeData(const Context& context, StopOperationData* data)
 int writeData(const Context& context, StartOperationData* data)
 {
     FILE* f = fopen(context.outFilePath.c_str(), "ab");
-    if(!f)
+    if (!f)
     {
         std::cerr << "Failed to open output file: " << context.outFilePath << std::endl;
         return -2;
@@ -340,15 +348,19 @@ int writeData(const Context& context, StartOperationData* data)
 
 int start(Context& context)
 {
-    StartOperationData* data = (StartOperationData *) context.additionalOperationData;
-    data->timestamp = std::chrono::duration_cast<std::chrono::milliseconds> (std::chrono::system_clock::now().time_since_epoch()).count();
+    StartOperationData* data = (StartOperationData*) context.additionalOperationData;
+    data->timestamp =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
+            .count();
     return writeData(context, data);
 }
 
 int stop(Context& context)
 {
-    StopOperationData* data = (StopOperationData *) context.additionalOperationData;
-    data->timestamp = std::chrono::duration_cast<std::chrono::milliseconds> (std::chrono::system_clock::now().time_since_epoch()).count();
+    StopOperationData* data = (StopOperationData*) context.additionalOperationData;
+    data->timestamp =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
+            .count();
     return writeData(context, data);
 }
 
@@ -364,12 +376,12 @@ int readBuildTimerData(Context& ctx, StatOperationData& data)
     int i = 0;
     Operation op;
     fread((void*) &op, 1, sizeof(op), f);
-    while(feof(f) == 0)
+    while (feof(f) == 0)
     {
         ++i;
         if (op == Operation::START)
         {
-            StartOperationData *sd = new StartOperationData();
+            StartOperationData* sd = new StartOperationData();
             fread((void*) &sd->timestamp, 1, sizeof(sd->timestamp), f);
 
             size_t noteSize = 0;
@@ -377,7 +389,8 @@ int readBuildTimerData(Context& ctx, StatOperationData& data)
 
             sd->note.resize(noteSize, '\0');
             fread((void*) sd->note.data(), 1, noteSize, f);
-            //std::cout << "Start " << sd->timestamp << " note size: " << noteSize << " note: "<< sd->note << std::endl;
+            // std::cout << "Start " << sd->timestamp << " note size: " << noteSize << " note: "<< sd->note <<
+            // std::endl;
             data.ops.push_back(std::make_pair(op, sd));
         }
         else if (op == Operation::STOP)
@@ -391,7 +404,7 @@ int readBuildTimerData(Context& ctx, StatOperationData& data)
             sd->exitCode.resize(exitCodeSize, '\0');
             fread((void*) sd->exitCode.data(), 1, exitCodeSize, f);
 
-            //std::cout << "Stop " << sd->timestamp << " exit code: " << sd->exitCode << std::endl;
+            // std::cout << "Stop " << sd->timestamp << " exit code: " << sd->exitCode << std::endl;
             data.ops.push_back(std::make_pair(op, sd));
         }
         fread((void*) &op, 1, sizeof(op), f);
@@ -404,33 +417,26 @@ int readBuildTimerData(Context& ctx, StatOperationData& data)
 void printBuildStats(const StatOperationData& data)
 {
     std::cout << "Build stats: " << std::endl;
-    std::cout << "    Total build time: "
-              << (int64_t) (data.totalBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
-              << ((data.totalBuildTime / 1000 / 3600) % 24) << " hours, "
-              << ((data.totalBuildTime / 1000 / 60) % 60) << " minutes, "
-              << (data.totalBuildTime / 1000 % 60) << " seconds, "
-              << data.totalBuildTime % 1000 << " milliseconds. "
+    std::cout << "    Total build time: " << (int64_t)(data.totalBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
+              << ((data.totalBuildTime / 1000 / 3600) % 24) << " hours, " << ((data.totalBuildTime / 1000 / 60) % 60)
+              << " minutes, " << (data.totalBuildTime / 1000 % 60) << " seconds, " << data.totalBuildTime % 1000
+              << " milliseconds. "
               << "(" << data.totalBuildTime << " ms total)" << std::endl;
-    std::cout << "    Max build time: "
-              << (int64_t) (data.maxBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
-              << ((data.maxBuildTime / 1000 / 3600) % 24) << " hours, "
-              << ((data.maxBuildTime / 1000 / 60) % 60) << " minutes, "
-              << (data.maxBuildTime / 1000 % 60) << " seconds, "
-              << data.maxBuildTime % 1000 << " milliseconds. "
+    std::cout << "    Max build time: " << (int64_t)(data.maxBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
+              << ((data.maxBuildTime / 1000 / 3600) % 24) << " hours, " << ((data.maxBuildTime / 1000 / 60) % 60)
+              << " minutes, " << (data.maxBuildTime / 1000 % 60) << " seconds, " << data.maxBuildTime % 1000
+              << " milliseconds. "
               << "(" << data.maxBuildTime << " ms total)" << std::endl;
-    std::cout << "    Avg build time: "
-              << (int64_t) (data.avgBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
-              << ((int64_t) (data.avgBuildTime / 1000 / 3600) % 24) << " hours, "
-              << ((int64_t) (data.avgBuildTime / 1000 / 60) % 60) << " minutes, "
-              << ((int64_t) (data.avgBuildTime / 1000) % 60) << " seconds, "
-              << (int64_t) data.avgBuildTime % 1000 << " milliseconds. "
+    std::cout << "    Avg build time: " << (int64_t)(data.avgBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
+              << ((int64_t)(data.avgBuildTime / 1000 / 3600) % 24) << " hours, "
+              << ((int64_t)(data.avgBuildTime / 1000 / 60) % 60) << " minutes, "
+              << ((int64_t)(data.avgBuildTime / 1000) % 60) << " seconds, " << (int64_t) data.avgBuildTime % 1000
+              << " milliseconds. "
               << "(" << data.avgBuildTime << " ms total)" << std::endl;
-    std::cout << "    Last build time: "
-              << (int64_t) (data.lastBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
-              << ((data.lastBuildTime / 1000 / 3600) % 24) << " hours, "
-              << ((data.lastBuildTime / 1000 / 60) % 60) << " minutes, "
-              << (data.lastBuildTime / 1000 % 60) << " seconds, "
-              << data.lastBuildTime % 1000 << " milliseconds. "
+    std::cout << "    Last build time: " << (int64_t)(data.lastBuildTime / 1000.0 / 3600.0 / 24.0) << " days, "
+              << ((data.lastBuildTime / 1000 / 3600) % 24) << " hours, " << ((data.lastBuildTime / 1000 / 60) % 60)
+              << " minutes, " << (data.lastBuildTime / 1000 % 60) << " seconds, " << data.lastBuildTime % 1000
+              << " milliseconds. "
               << "(" << data.lastBuildTime << " ms total)" << std::endl;
     std::cout << "    Total build count: " << data.totalBuildCount << std::endl;
     std::cout << "    Successful build count: " << data.successfulBuildCount << std::endl;
@@ -470,17 +476,19 @@ void drawBuildTimeGraph(const StatOperationData& data)
     const double maxHeight = 11.0;
     const double maxWidth = data.buildGraphData.buildDates.size();
 
-    const int64_t tsNow = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    const int64_t tsNow =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     const int64_t tsOld = (tsNow - (maxWidth * 24 * 60 * 60));
 
     // Draw avg build time graph
-    std::cout << "Average build times for the last " << maxWidth << " days (" << computeDateStr(tsOld) << " - " << computeDateStr(tsNow) << "):" << std::endl;
+    std::cout << "Average build times for the last " << maxWidth << " days (" << computeDateStr(tsOld) << " - "
+              << computeDateStr(tsNow) << "):" << std::endl;
     std::cout << "            ";
     for (int j = maxHeight - 1; j >= 0; --j)
     {
         for (int i = maxWidth - 1; i >= 0; --i)
         {
-            const int columnHeight = data.buildGraphData.avgBuildTimes[i] * maxHeight / (double)maxAvgBuildTime;
+            const int columnHeight = data.buildGraphData.avgBuildTimes[i] * maxHeight / (double) maxAvgBuildTime;
             if (j <= columnHeight)
             {
                 std::cout << "*";
@@ -497,7 +505,7 @@ void drawBuildTimeGraph(const StatOperationData& data)
                 {
                     std::cout << minAvgBuildTime / 1000.0 << " s";
                 }
-                if (j == (int)(maxHeight / 2))
+                if (j == (int) (maxHeight / 2))
                 {
                     std::cout << (minAvgBuildTime + maxAvgBuildTime) / 2000.0 << " s";
                 }
@@ -517,15 +525,15 @@ void drawBuildTimeGraph(const StatOperationData& data)
     std::cout << std::endl;
     std::cout << std::endl;
 
-
     // Draw max build time graph
-    std::cout << "Total build times for the last " << maxWidth << " days (" << computeDateStr(tsOld) << " - " << computeDateStr(tsNow) << "):" << std::endl;
+    std::cout << "Total build times for the last " << maxWidth << " days (" << computeDateStr(tsOld) << " - "
+              << computeDateStr(tsNow) << "):" << std::endl;
     std::cout << "            ";
     for (int j = maxHeight - 1; j >= 0; --j)
     {
         for (int i = maxWidth - 1; i >= 0; --i)
         {
-            const int columnHeight = data.buildGraphData.totalBuildTimes[i] * maxHeight / (double)maxTotalBuildTime;
+            const int columnHeight = data.buildGraphData.totalBuildTimes[i] * maxHeight / (double) maxTotalBuildTime;
             if (j <= columnHeight)
             {
                 std::cout << "*";
@@ -542,7 +550,7 @@ void drawBuildTimeGraph(const StatOperationData& data)
                 {
                     std::cout << minTotalBuildTime / 1000.0 << " s";
                 }
-                if (j == (int)(maxHeight / 2))
+                if (j == (int) (maxHeight / 2))
                 {
                     std::cout << (minTotalBuildTime + maxTotalBuildTime) / 2000.0 << " s";
                 }
@@ -566,23 +574,23 @@ void drawBuildTimeGraph(const StatOperationData& data)
 int stat(Context& context)
 {
     StatOperationData data = {};
-    if(readBuildTimerData(context, data) != 0)
+    if (readBuildTimerData(context, data) != 0)
     {
         std::cerr << "Failed to read build timer data!" << std::endl;
         return -33;
     }
     // std::cout << "Ops read from storage: " << data.ops.size() << std::endl;
 
-    
-
     const int daysToCheck = 120;
     std::vector<std::pair<std::string, int64_t>> buildDays;
     buildDays.reserve(daysToCheck);
-    const int64_t tsNow = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    const int64_t tsNow =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
+            .count();
 
     for (int i = 0; i < daysToCheck; ++i)
     {
-        const int64_t tsAux = (tsNow / 1000.0 - (i * 24 * 60 * 60)) ;
+        const int64_t tsAux = (tsNow / 1000.0 - (i * 24 * 60 * 60));
         data.buildGraphData.buildDates.push_back(computeDateStr(tsAux));
         data.buildGraphData.avgBuildTimes.push_back(0);
         data.buildGraphData.totalBuildTimes.push_back(0);
@@ -593,8 +601,8 @@ int stat(Context& context)
     {
         if (data.ops[i - 1].first == Operation::START && data.ops[i].first == Operation::STOP)
         {
-            StartOperationData* startData = (StartOperationData *) (data.ops[i - 1].second);
-            StopOperationData* stopData = (StopOperationData *) (data.ops[i].second);
+            StartOperationData* startData = (StartOperationData*) (data.ops[i - 1].second);
+            StopOperationData* stopData = (StopOperationData*) (data.ops[i].second);
             size_t buildTime = stopData->timestamp - startData->timestamp;
             if (buildTime >= 0)
             {
@@ -630,14 +638,14 @@ int stat(Context& context)
                 data.lastBuildTime = buildTime;
             }
 
-            if (buildTime > data.maxBuildTime) {
+            if (buildTime > data.maxBuildTime)
+            {
                 data.maxBuildTime = buildTime;
             }
         }
         else
         {
-            if (i + 1 < data.ops.size() &&
-                data.ops[i].first == Operation::START &&
+            if (i + 1 < data.ops.size() && data.ops[i].first == Operation::START &&
                 data.ops[i + 1].first == Operation::STOP)
             {
                 // ignore, next iteration will count it..
@@ -648,13 +656,16 @@ int stat(Context& context)
             }
         }
     }
-    data.avgBuildTime = data.totalBuildTime / data.successfulBuildCount;
+    data.avgBuildTime =
+        data.successfulBuildCount ? data.totalBuildTime / data.successfulBuildCount : data.totalBuildTime;
 
     for (int i = 0; i < data.buildGraphData.buildDates.size(); ++i)
     {
-        data.buildGraphData.avgBuildTimes[i] = data.buildGraphData.avgBuildTimes[i] != 0 ? data.buildGraphData.totalBuildTimes[i] / (double)data.buildGraphData.avgBuildTimes[i] : 0 ;
+        data.buildGraphData.avgBuildTimes[i] =
+            data.buildGraphData.avgBuildTimes[i] != 0 ?
+                data.buildGraphData.totalBuildTimes[i] / (double) data.buildGraphData.avgBuildTimes[i] :
+                0;
     }
-
 
     drawBuildTimeGraph(data);
     printBuildStats(data);
@@ -665,24 +676,26 @@ int stat(Context& context)
 int takeDump(Context& context)
 {
     StatOperationData data = {};
-    if(readBuildTimerData(context, data) != 0)
+    if (readBuildTimerData(context, data) != 0)
     {
         std::cerr << "Failed to read build timer data!" << std::endl;
         return -33;
     }
 
     std::cout << "INDEX|OPERATION TYPE|TIMESTAMP|[Note/Exit Code]" << std::endl;
-    for(int i = 0; i < data.ops.size(); ++i)
+    for (int i = 0; i < data.ops.size(); ++i)
     {
         if (data.ops[i].first == Operation::START)
         {
-            StartOperationData* startData = (StartOperationData *) (data.ops[i].second);
-            std::cout << i << "|" << (int)data.ops[i].first << "|" << startData->timestamp << "|" << startData->note << std::endl;
+            StartOperationData* startData = (StartOperationData*) (data.ops[i].second);
+            std::cout << i << "|" << (int) data.ops[i].first << "|" << startData->timestamp << "|" << startData->note
+                      << std::endl;
         }
         else if (data.ops[i].first == Operation::STOP)
         {
-            StopOperationData* stopData = (StopOperationData *) (data.ops[i].second);
-            std::cout << i << "|" << (int)data.ops[i].first << "|" << stopData->timestamp << "|" << stopData->exitCode << std::endl;
+            StopOperationData* stopData = (StopOperationData*) (data.ops[i].second);
+            std::cout << i << "|" << (int) data.ops[i].first << "|" << stopData->timestamp << "|" << stopData->exitCode
+                      << std::endl;
         }
     }
 
@@ -713,7 +726,6 @@ int execute(Context& context)
 }
 } // namespace pdrain
 
-
 int main(int argc, const char** argv)
 {
     std::vector<std::pair<std::string, std::string>> arguments = pdrain::ArgParser::parseArguments(argc - 1, argv + 1);
@@ -724,7 +736,7 @@ int main(int argc, const char** argv)
     }
 
     pdrain::Context ctx;
-    if(!init(arguments, ctx))
+    if (!init(arguments, ctx))
     {
         std::cerr << "Init failed!" << std::endl;
         return -2;
